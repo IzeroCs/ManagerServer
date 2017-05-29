@@ -22,7 +22,6 @@
         const ARRAY_DATA_KEY_VERSION_CHANGELOG       = 'changelog';
         const ARRAY_DATA_KEY_VERSION_BUILD_LAST      = 'build_last';
         const ARRAY_DATA_KEY_VERSION_COMPRESS_METHOD = 'compress_method';
-        const ARRAY_DATA_KEY_VERSION_DATA_UPDATE     = 'data_update';
         const ARRAY_DATA_KEY_VERSION_PATH            = 'path';
         const ARRAY_DATA_ERROR_INT                   = 'error_int';
 
@@ -106,17 +105,15 @@
             $pathValue           = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_PATH];
             $dataUpdateValue     = null;
 
-            if ($this->versionGuestIsOld == false) {
-                $changeMsgValue = null;
-            }
+            if ($this->versionGuestIsOld == false)
+                $changeLogValue = null;
 
             echo json_encode([
                 self::ARRAY_DATA_KEY_VERSION_VALUE           => $versionValue,
                 self::ARRAY_DATA_KEY_VERSION_IS_BETA         => $isBetaValue,
                 self::ARRAY_DATA_KEY_VERSION_BUILD_LAST      => $buildLastValue,
                 self::ARRAY_DATA_KEY_VERSION_CHANGELOG       => $changeLogValue,
-                self::ARRAY_DATA_KEY_VERSION_COMPRESS_METHOD => $compressMethodValue,
-                self::ARRAY_DATA_KEY_VERSION_DATA_UPDATE     => $dataUpdateValue
+                self::ARRAY_DATA_KEY_VERSION_COMPRESS_METHOD => $compressMethodValue
             ]);
         }
 
