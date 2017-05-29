@@ -15,7 +15,7 @@
                 'is_beta'         => true,
                 'changelog'       => null,
                 'build_last'      => time(),
-                'compress_method' => 'zip',
+                'compress_method' => 'zip.hex',
                 'path'            => __DIR__ . SP . '3.5.0'
             ]
         ]

@@ -5,6 +5,8 @@
     if (defined('LOADED') == false)
         exit;
 
+    use Librarys\File\FileInfo;
+
     final class AppUpdate
     {
 
@@ -15,15 +17,17 @@
 
         const PARAMETER_VERSION_GUEST_URL = 'version_guest';
 
-        const ARRAY_DATA_KEY_VERSION_CURRENT         = 'version_current';
-        const ARRAY_DATA_KEY_LISTS                   = 'lists';
-        const ARRAY_DATA_KEY_VERSION_VALUE           = 'version';
-        const ARRAY_DATA_KEY_VERSION_IS_BETA         = 'is_beta';
-        const ARRAY_DATA_KEY_VERSION_CHANGELOG       = 'changelog';
-        const ARRAY_DATA_KEY_VERSION_BUILD_LAST      = 'build_last';
-        const ARRAY_DATA_KEY_VERSION_COMPRESS_METHOD = 'compress_method';
-        const ARRAY_DATA_KEY_VERSION_PATH            = 'path';
-        const ARRAY_DATA_ERROR_INT                   = 'error_int';
+        const ARRAY_DATA_KEY_VERSION_CURRENT       = 'version_current';
+        const ARRAY_DATA_KEY_LISTS                 = 'lists';
+        const ARRAY_DATA_KEY_VERSION_VALUE         = 'version';
+        const ARRAY_DATA_KEY_VERSION_IS_BETA       = 'is_beta';
+        const ARRAY_DATA_KEY_VERSION_CHANGELOG     = 'changelog';
+        const ARRAY_DATA_KEY_VERSION_BUILD_LAST    = 'build_last';
+        const ARRAY_DATA_KEY_VERSION_DATA_UPGRADE  = 'data_upgrade';
+        const ARRAY_DATA_KEY_VERSION_MD5_BIN_CHECK = 'md5_bin_check';
+        const ARRAY_DATA_KEY_VERSION_SERVER_NAME   = 'server_name';
+        const ARRAY_DATA_KEY_VERSION_PATH          = 'path';
+        const ARRAY_DATA_ERROR_INT                 = 'error_int';
 
         const ERROR_NONE                                      = 0;
         const ERROR_CHECK_NOT_FOUND_LIST_VERSION_IN_SERVER    = 1;
@@ -31,6 +35,10 @@
         const ERROR_CHECK_VERSION_GUEST_NOT_VALIDATE          = 3;
         const ERROR_CHECK_VERSION_SERVER_NOT_VALIDATE         = 4;
         const ERROR_CHECK_NOT_FOUND_VERSION_CURRENT_IN_SERVER = 5;
+
+        const VERSION_BIN_FILENAME       = 'bin.zip';
+        const VERSION_BIN_MD5_FILENAME   = 'bin.zip.md5';
+        const VERSION_CHANGELOG_FILENAME = 'changelog.md';
 
         public function __construct($arrayVersions)
         {
@@ -65,7 +73,7 @@
             if (strcasecmp($versionCurrent, $versionCurrentInList) !== 0)
                 return $this->errorCheck(self::ERROR_CHECK_VERSION_SERVER_NOT_VALIDATE);
 
-            if (self::validateVersionValue($versionGuest, $versionCurrentMatches) == false || self::validateVersionValue($versionCurrentInList) == false)
+            if (self::validateVersionValue($versionCurrent, $versionCurrentMatches) == false || self::validateVersionValue($versionCurrentInList) == false)
                 return $this->errorCheck(self::ERROR_CHECK_VERSION_SERVER_NOT_VALIDATE);
 
             $this->versionGuestIsOld = false;
@@ -73,8 +81,11 @@
             if (isset($versionGuestMatches[3]) == false)
                 $versionGuestMatches[3] = -1;
 
-            for ($i = 0; $i < 3; ++$i) {
-                if ($versionCurrentMatches[$i] > $versionGuestMatches[$i]) {
+            if (isset($versionCurrentMatches[3]) == false)
+                $versionCurrentMatches[3] = -1;
+
+            for ($i = 1; $i <= 3; ++$i) {
+                if (intval($versionCurrentMatches[$i]) > intval($versionGuestMatches[$i])) {
                     $this->versionGuestIsOld = true;
                     break;
                 }
@@ -97,23 +108,49 @@
 
         public function responseUpdateResult()
         {
-            $versionValue        = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_VALUE];
-            $isBetaValue         = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_IS_BETA];
-            $buildLastValue      = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_BUILD_LAST];
-            $changeLogValue      = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_CHANGELOG];
-            $compressMethodValue = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_COMPRESS_METHOD];
-            $pathValue           = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_PATH];
-            $dataUpdateValue     = null;
+            $versionValue    = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_VALUE];
+            $isBetaValue     = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_IS_BETA];
+            $buildLastValue  = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_BUILD_LAST];
+            $changeLogValue  = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_CHANGELOG];
+            $pathValue       = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_PATH];
+            $dataUpdateValue = null;
+            $md5BinValue     = null;
 
-            if ($this->versionGuestIsOld == false)
+            if ($this->versionGuestIsOld == false) {
                 $changeLogValue = null;
+            } else {
+                $binFilePath       = FileInfo::validate($pathValue . SP . self::VERSION_BIN_FILENAME);
+                $binMd5FilePath    = FileInfo::validate($pathValue . SP . self::VERSION_BIN_MD5_FILENAME);
+                $changelogFilePath = FileInfo::validate($pathValue . SP . self::VERSION_CHANGELOG_FILENAME);
+
+                if (FileInfo::fileExists($binFilePath) == false) {
+                    $this->errorCheck(self::ERROR_CHECK_NOT_FOUND_VERSION_CURRENT_IN_SERVER);
+                } else {
+                    if (FileInfo::fileExists($binMd5FilePath) == false)
+                        FileInfo::fileWriteContents($binMd5FilePath, @md5_file($binFilePath));
+
+                    $md5BinValue = FileInfo::fileReadContents($binMd5FilePath);
+
+                    if ($md5BinValue === false || empty($md5BinValue))
+                        FileInfo::fileWriteContents($binMd5FilePath, @md5_file($binFilePath));
+
+                    if (FileInfo::fileExists($changelogFilePath))
+                        $changeLogValue = @bin2hex(FileInfo::fileReadContents($changelogFilePath));
+
+                    $md5BinValue     = FileInfo::fileReadContents($binMd5FilePath);
+                    $dataUpdateValue = @bin2hex(FileInfo::fileReadContents($binFilePath));
+                }
+            }
 
             echo json_encode([
+                self::ARRAY_DATA_KEY_VERSION_SERVER_NAME     => $_SERVER['HTTP_HOST'],
                 self::ARRAY_DATA_KEY_VERSION_VALUE           => $versionValue,
                 self::ARRAY_DATA_KEY_VERSION_IS_BETA         => $isBetaValue,
                 self::ARRAY_DATA_KEY_VERSION_BUILD_LAST      => $buildLastValue,
                 self::ARRAY_DATA_KEY_VERSION_CHANGELOG       => $changeLogValue,
-                self::ARRAY_DATA_KEY_VERSION_COMPRESS_METHOD => $compressMethodValue
+                self::ARRAY_DATA_KEY_VERSION_DATA_UPGRADE    => $dataUpdateValue,
+                self::ARRAY_DATA_KEY_VERSION_MD5_BIN_CHECK   => $md5BinValue,
+                self::ARRAY_DATA_ERROR_INT                   => $this->errorCheck
             ]);
         }
 
