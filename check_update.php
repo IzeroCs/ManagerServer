@@ -1,11 +1,13 @@
 <?php
 
-    echo json_encode([
-        'version'         => '3.5.0 beta',
-        'change_msg'      => null,
-        'build_last'      => time(),
-        'compress_method' => 'zip',
-        'data_update'     => null
-    ]);
+    define('LOADED', 1);
+    require_once('global.php');
+
+    $appUpdate = new Librarys\App\AppUpdate(require_once(env('app.path.versions')));
+
+    if ($appUpdate->checkUpdate())
+        $appUpdate->responseUpdateResult();
+    else
+        $appUpdate->responseUpdateError();
 
 ?>
