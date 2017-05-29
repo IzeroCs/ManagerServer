@@ -2,6 +2,9 @@
 
     namespace Librarys;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\Environment;
     use Librarys\File\FileInfo;
 

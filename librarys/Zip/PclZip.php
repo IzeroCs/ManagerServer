@@ -2,6 +2,9 @@
 
   namespace Librarys\Zip;
 
+    if (defined('LOADED') == false)
+        exit;
+
   use Librarys\File\FileInfo;
 // --------------------------------------------------------------------------------
 // PhpConcept Library - Zip Module 2.8.2

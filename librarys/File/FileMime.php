@@ -2,6 +2,9 @@
 
 	namespace Librarys\File;
 
+    if (defined('LOADED') == false)
+        exit;
+
 	final class FileMime
 	{
 

@@ -2,6 +2,9 @@
 
     namespace Librarys;
 
+    if (defined('LOADED') == false)
+        exit;
+
     require_once('File' . SP . 'FileInfo.php');
 
     use Librarys\File\FileInfo;

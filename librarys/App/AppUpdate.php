@@ -2,6 +2,9 @@
 
     namespace Librarys\App;
 
+    if (defined('LOADED') == false)
+        exit;
+
     final class AppUpdate
     {
 

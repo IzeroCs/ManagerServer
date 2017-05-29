@@ -3,6 +3,9 @@
     if (defined('SP') == false)
         define('SP', DIRECTORY_SEPARATOR);
 
+    if (defined('LOADED') == false)
+        exit;
+
     return [
         'version_current' => '3.5.0',
 

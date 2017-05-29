@@ -2,6 +2,9 @@
 
 	namespace Librarys\Firewall;
 
+    if (defined('LOADED') == false)
+        exit;
+
 	use Librarys\Boot;
     use Librarys\File\FileInfo;
 

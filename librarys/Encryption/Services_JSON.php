@@ -2,6 +2,9 @@
 
     namespace Librarys\Encryption;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\Encryption\Services_JSON_Error;
 
 /**

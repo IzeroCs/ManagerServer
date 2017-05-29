@@ -2,6 +2,9 @@
 
     namespace Librarys;
 
+    if (defined('LOADED') == false)
+        exit;
+
     if (defined('SP') == false)
         define('SP', DIRECTORY_SEPARATOR);
 

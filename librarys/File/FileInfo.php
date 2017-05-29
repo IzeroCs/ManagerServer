@@ -2,6 +2,9 @@
 
 	namespace Librarys\File;
 
+    if (defined('LOADED') == false)
+        exit;
+
     use Librarys\Zip\PclZip;
 
 	final class FileInfo

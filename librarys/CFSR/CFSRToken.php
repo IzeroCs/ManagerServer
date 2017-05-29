@@ -2,6 +2,9 @@
 
     namespace Librarys\CFSR;
 
+    if (defined('LOADED') == false)
+        exit;
+
     final class CFSRToken
     {
 

@@ -3,6 +3,9 @@
     if (defined('SP') == false)
         define('SP', DIRECTORY_SEPARATOR);
 
+    if (defined('LOADED') == false)
+        exit;
+
     require_once(__DIR__ . SP . 'Environment.php');
     require_once(__DIR__ . SP . 'Language.php');
     require_once(__DIR__ . SP . 'File' . SP . 'FileInfo.php');

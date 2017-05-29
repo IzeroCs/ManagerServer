@@ -1,5 +1,8 @@
 <?php
 
+    if (defined('LOADED') == false)
+        exit;
+
     return [
         'server' => [
             'document_root' => dirname(dirname(dirname(__DIR__))),
