@@ -21,18 +21,19 @@
         const PARAMETER_VERSION_GUEST_URL  = 'version_guest';
         const PARAMETER_LANGUAGE_GUEST_URL = 'language_guest';
 
-        const ARRAY_DATA_KEY_VERSION_CURRENT       = 'version_current';
-        const ARRAY_DATA_KEY_LISTS                 = 'lists';
-        const ARRAY_DATA_KEY_VERSION_VALUE         = 'version';
-        const ARRAY_DATA_KEY_VERSION_IS_BETA       = 'is_beta';
-        const ARRAY_DATA_KEY_VERSION_CHANGELOG     = 'changelog';
-        const ARRAY_DATA_KEY_VERSION_README        = 'readme';
-        const ARRAY_DATA_KEY_VERSION_BUILD_LAST    = 'build_last';
-        const ARRAY_DATA_KEY_VERSION_DATA_UPGRADE  = 'data_upgrade';
-        const ARRAY_DATA_KEY_VERSION_MD5_BIN_CHECK = 'md5_bin_check';
-        const ARRAY_DATA_KEY_VERSION_SERVER_NAME   = 'server_name';
-        const ARRAY_DATA_KEY_VERSION_PATH          = 'path';
-        const ARRAY_DATA_ERROR_INT                 = 'error_int';
+        const ARRAY_DATA_KEY_VERSION_CURRENT            = 'version_current';
+        const ARRAY_DATA_KEY_LISTS                      = 'lists';
+        const ARRAY_DATA_KEY_VERSION_VALUE              = 'version';
+        const ARRAY_DATA_KEY_VERSION_IS_BETA            = 'is_beta';
+        const ARRAY_DATA_KEY_VERSION_CHANGELOG          = 'changelog';
+        const ARRAY_DATA_KEY_VERSION_README             = 'readme';
+        const ARRAY_DATA_KEY_VERSION_BUILD_LAST         = 'build_last';
+        const ARRAY_DATA_KEY_VERSION_DATA_UPGRADE       = 'data_upgrade';
+        const ARRAY_DATA_KEY_VERSION_MD5_BIN_CHECK      = 'md5_bin_check';
+        const ARRAY_DATA_KEY_VERSION_SERVER_NAME        = 'server_name';
+        const ARRAY_DATA_KEY_VERSION_PATH               = 'path';
+        const ARRAY_DATA_KEY_VERSION_ENTRY_IGONE_REMOVE = 'entry_igone_remove';
+        const ARRAY_DATA_ERROR_INT                      = 'error_int';
 
         const ERROR_NONE                                      = 0;
         const ERROR_CHECK_NOT_FOUND_LIST_VERSION_IN_SERVER    = 1;
@@ -125,15 +126,16 @@
 
         public function responseUpdateResult()
         {
-            $versionValue    = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_VALUE];
-            $isBetaValue     = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_IS_BETA];
-            $buildLastValue  = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_BUILD_LAST];
-            $pathValue       = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_PATH];
+            $versionValue          = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_VALUE];
+            $isBetaValue           = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_IS_BETA];
+            $buildLastValue        = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_BUILD_LAST];
+            $entryIgoneRemoveValue = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_ENTRY_IGONE_REMOVE];
+            $pathValue             = $this->versionCurrents[self::ARRAY_DATA_KEY_VERSION_PATH];
 
-            $dataUpdateValue = null;
-            $md5BinValue     = null;
-            $changeLogValue  = null;
-            $readmeValue     = null;
+            $dataUpdateValue  = null;
+            $md5BinValue      = null;
+            $changeLogValue   = null;
+            $readmeValue      = null;
 
             if ($this->versionGuestIsOld == false) {
                 $changeLogValue = null;
@@ -172,15 +174,16 @@
             }
 
             echo json_encode([
-                self::ARRAY_DATA_KEY_VERSION_SERVER_NAME     => $_SERVER['HTTP_HOST'],
-                self::ARRAY_DATA_KEY_VERSION_VALUE           => $versionValue,
-                self::ARRAY_DATA_KEY_VERSION_IS_BETA         => $isBetaValue,
-                self::ARRAY_DATA_KEY_VERSION_BUILD_LAST      => $buildLastValue,
-                self::ARRAY_DATA_KEY_VERSION_CHANGELOG       => $changeLogValue,
-                self::ARRAY_DATA_KEY_VERSION_README          => $readmeValue,
-                self::ARRAY_DATA_KEY_VERSION_DATA_UPGRADE    => $dataUpdateValue,
-                self::ARRAY_DATA_KEY_VERSION_MD5_BIN_CHECK   => $md5BinValue,
-                self::ARRAY_DATA_ERROR_INT                   => $this->errorCheck
+                self::ARRAY_DATA_KEY_VERSION_SERVER_NAME        => $_SERVER['HTTP_HOST'],
+                self::ARRAY_DATA_KEY_VERSION_VALUE              => $versionValue,
+                self::ARRAY_DATA_KEY_VERSION_IS_BETA            => $isBetaValue,
+                self::ARRAY_DATA_KEY_VERSION_BUILD_LAST         => $buildLastValue,
+                self::ARRAY_DATA_KEY_VERSION_CHANGELOG          => $changeLogValue,
+                self::ARRAY_DATA_KEY_VERSION_README             => $readmeValue,
+                self::ARRAY_DATA_KEY_VERSION_DATA_UPGRADE       => $dataUpdateValue,
+                self::ARRAY_DATA_KEY_VERSION_MD5_BIN_CHECK      => $md5BinValue,
+                self::ARRAY_DATA_KEY_VERSION_ENTRY_IGONE_REMOVE => $entryIgoneRemoveValue,
+                self::ARRAY_DATA_ERROR_INT                      => $this->errorCheck
             ]);
         }
 
