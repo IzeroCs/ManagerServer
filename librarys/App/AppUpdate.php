@@ -154,13 +154,7 @@
                 if (FileInfo::fileExists($binFilePath) == false) {
                     $this->errorCheck(self::ERROR_CHECK_NOT_FOUND_VERSION_CURRENT_IN_SERVER);
                 } else {
-                    if (FileInfo::fileExists($binMd5FilePath) == false)
-                        FileInfo::fileWriteContents($binMd5FilePath, @md5_file($binFilePath));
-
-                    $md5BinValue = FileInfo::fileReadContents($binMd5FilePath);
-
-                    if ($md5BinValue === false || empty($md5BinValue))
-                        FileInfo::fileWriteContents($binMd5FilePath, @md5_file($binFilePath));
+                    FileInfo::fileWriteContents($binMd5FilePath, @md5_file($binFilePath));
 
                     if (FileInfo::fileExists($changelogFilePath))
                         $changeLogValue = @bin2hex(FileInfo::fileReadContents($changelogFilePath));
