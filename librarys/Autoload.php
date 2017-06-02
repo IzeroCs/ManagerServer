@@ -2,11 +2,11 @@
 
     namespace Librarys;
 
-    if (defined('LOADED') == false)
-        exit;
-
     if (defined('SP') == false)
         define('SP', DIRECTORY_SEPARATOR);
+
+    if (defined('LOADED') == false)
+        exit;
 
     require_once('File' . SP . 'FileInfo.php');
 
@@ -44,7 +44,7 @@
             if (($path = $this->isFileLibrarys($classes)) !== false)
                 require_once($path);
             else
-                trigger_error('Class ' . $classes . ' not require');
+                die('Class ' . $classes . ' not require');
         }
 
         public function isFileLibrarys($classes)

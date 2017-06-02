@@ -2,11 +2,11 @@
 
     namespace Librarys;
 
-    if (defined('LOADED') == false)
-        exit;
-
     if (defined('SP') == false)
         define('SP', DIRECTORY_SEPARATOR);
+
+    if (defined('LOADED') == false)
+        exit;
 
     error_reporting(E_ALL);
 
@@ -17,21 +17,19 @@
 
     use Librarys\Autoload;
     use Librarys\CFSR\CFSRToken;
-    use Librarys\Firewall\FirewallProcess;
 
     final class Boot
     {
 
         private $environment;
         private $language;
-        private $firewall;
         private $autoload;
         private $cfsr;
+        private $isCustomHeader;
 
-        private $isErrorHandler;
-
-        public function __construct(array $config)
+        public function __construct(array $config, $isCustomHeader = false)
         {
+            $this->setCustomHeader($isCustomHeader);
             $this->obBufferStart();
             $this->obBufferEnd();
             $this->fixMagicQuotesGpc();
@@ -41,8 +39,6 @@
             $this->autoload    = new Autoload($this);
 
             $this->environment->execute();
-
-            $this->obErrorHandler();
             $this->dateInitializing();
 
             $this->language->execute();
@@ -51,11 +47,7 @@
             if (env('app.session.init', false) == true)
                 $this->sessionInitializing();
 
-            $this->firewall = new FirewallProcess($this);
-            $this->cfsr     = new CFSRToken();
-
-            if (env('app.firewall.enable', false))
-                $this->firewall->execute();
+            $this->cfsr = new CFSRToken();
         }
 
         public function fixMagicQuotesGpc()
@@ -69,11 +61,6 @@
                 stripcslashesResursive($_REQUEST);
                 stripcslashesResursive($_COOKIE);
             }
-        }
-
-        public function sleepFixHeaderRedirectUrl()
-        {
-            sleep(env('app.sleep_time_redirect', 2));
         }
 
         public function sessionInitializing()
@@ -97,6 +84,8 @@
 
                 session_start();
             }
+
+            return true;
         }
 
         public function dateInitializing()
@@ -111,94 +100,19 @@
             else
                 @ob_start();
 
-            header('Cache-Control: private, max-age=0, no-cache, no-store, must-revalidate');
-            header('Pragma: no-cache');
-            header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
-            header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', time()) . 'GMT');
-            header('Etag: "' . md5(time()) . '"');
+            if ($this->isCustomHeader == false) {
+                header('Cache-Control: private, max-age=0, no-cache, no-store, must-revalidate');
+                header('Pragma: no-cache');
+                header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+                header('Last-Modified: ' . gmdate('D, d M Y H:i:s ', time()) . 'GMT');
+                header('Etag: "' . md5(time()) . '"');
+            }
         }
 
         public function obBufferClean()
         {
             @ob_clean();
             @ob_end_clean();
-        }
-
-        public function obBufferHandler($label, $message, $title = null)
-        {
-            $path = env('app.path.error') . SP .
-                    env('error.handler')  .
-                    env('error.mime');
-
-            /*if (FileInfo::isTypeFile($path)) {
-                if ($title == null)
-                    $title = $label;
-
-                ob_clean();
-                ob_flush();
-
-                header('Content-Type: text/html');
-                require_once($path);
-            }*/
-        }
-
-        public function obErrorHandler()
-        {
-            if (self::isRunLocal() == false)
-                return;
-
-            $this->isErrorHandler = false;
-
-            register_shutdown_function(function() {
-                $errors = error_get_last();
-
-                if (is_array($errors)) {
-                    switch ($errors['type']) {
-                        case E_PARSE:
-                        case E_ERROR:
-                        case E_CORE_ERROR:
-                        case E_COMPILE_ERROR:
-                        case E_USER_ERROR:
-                            $errors['type_string'] = 'Fatal error';
-                            break;
-
-                        case E_WARNING:
-                        case E_USER_WARNING:
-                        case E_COMPILE_WARNING:
-                        case E_RECOVERABLE_ERROR:
-                            $errors['type_string'] = 'Warning';
-                            break;
-
-                        case E_NOTICE:
-                        case E_USER_NOTICE:
-                            $errors['type_string'] = 'Notice';
-                            break;
-
-                        case E_STRICT:
-                            $errors['type_string'] = 'Strict';
-                            break;
-
-                        case E_DEPRECATED:
-                        case E_USER_DEPRECATED:
-                            $errors['type_string'] = 'Deprecated';
-                            break;
-
-                        default:
-                            $errors['type_string'] = 'Unknown';
-                            break;
-                    }
-
-                    $this->isErrorHandler = true;
-
-                    $this->obBufferHandler(
-                        $errors['type_string'] . ' in ' .
-                        $errors['file']        . ' on line ' .
-                        $errors['line'],
-                        $errors['message'],
-                        $errors['type_string']
-                    );
-                }
-            });
         }
 
         public function obBufferEnd()
@@ -222,11 +136,6 @@
             return $this->language;
         }
 
-        public function getFirewall()
-        {
-            return $this->firewall;
-        }
-
         public function getAutoload()
         {
             return $this->autoload;
@@ -235,6 +144,26 @@
         public function getCFSRToken()
         {
             return $this->cfsr;
+        }
+
+        public function setCustomHeader($isCustomHeader)
+        {
+            $this->isCustomHeader = $isCustomHeader;
+        }
+
+        public function isCustomHeader()
+        {
+            return $this->isCustomHeader;
+        }
+
+        public function getMemoryUsageBegin()
+        {
+            return $this->memoryUsageBegin;
+        }
+
+        public function getMemoryUsageEnd()
+        {
+            return $this->memoryUsageEnd;
         }
 
         public static function isRunLocal()

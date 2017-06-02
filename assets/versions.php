@@ -11,15 +11,14 @@
 
         'lists' => [
             '3.5.0' => [
-                'version'         => '3.5.0',
-                'is_beta'         => true,
-                'build_last'      => time(),
-                'compress_method' => 'zip.hex',
-                'path'            => __DIR__ . SP . '3.5.0',
+                'version'    => '3.5.0',
+                'is_beta'    => true,
+                'path'       => __DIR__ . SP . '3.5.0',
 
                 'entry_igone_remove' => [
                     'assets' . SP . 'config',
-                    'assets' . SP . 'user'
+                    'assets' . SP . 'user',
+                    'assets' . SP . 'token'
                 ]
             ]
         ]

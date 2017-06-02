@@ -9,15 +9,8 @@
         ],
 
         'app' => [
-            'sleep_time_redirect' => 3,
-
             'dev' => [
-                'enable'       => true,
-                'compress_css' => false,
-                'compress_js'  => false,
-                'cache_css'    => 86400,
-                'cache_js'     => 86400,
-                'rand'         => 'generatorDevRandResource',
+                'enable' => true
             ],
 
             'date' => [
@@ -54,13 +47,7 @@
                 'validate_post' => true,
                 'validate_get'  => true
             ]
-        ],
-
-        'error' => [
-            'reporting' => E_ALL | E_STRICT,
-            'mime'      => '.php',
-            'theme'     => '${resource.theme.default}'
-        ],
+        ]
 
     ];
 

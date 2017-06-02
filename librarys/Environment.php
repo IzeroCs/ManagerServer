@@ -2,10 +2,10 @@
 
     namespace Librarys;
 
+    require_once('File' . SP . 'FileInfo.php');
+
     if (defined('LOADED') == false)
         exit;
-
-    require_once('File' . SP . 'FileInfo.php');
 
     use Librarys\File\FileInfo;
 
@@ -64,8 +64,8 @@
                 $this->cache('app.directory', '');
                 $this->cache('app.directory_absolute', '');
             } else {
-                $appDirectory         = FileInfo::validate(substr(env('app.path.root'), strlen(env('server.document_root'))));
-                $appDirectoryAbsolute = FileInfo::validate(substr(env('app.path.root'), strlen(env('SERVER.DOCUMENT_ROOT'))));
+                $appDirectory         = FileInfo::filterPaths(substr(env('app.path.root'), strlen(env('server.document_root'))));
+                $appDirectoryAbsolute = FileInfo::filterPaths(substr(env('app.path.root'), strlen(env('SERVER.DOCUMENT_ROOT'))));
 
                 if (strpos($appDirectory, SP) === 0)
                     $appDirectory = substr($appDirectory, 1);
@@ -99,31 +99,9 @@
             $this->cache('app.session.cache_limitter',  session_cache_limiter());
             $this->cache('app.session.cache_expire',    session_cache_expire());
 
-            $this->cache('app.classes.global',    env('app.autoload.prefix_namespace') . '\Classes\ClassesGlobals');
-            $this->cache('app.classes.not_found', env('app.autoload.prefix_namespace') . '\Classes\ClassesHttpNotFound');
-            $this->cache('app.classes.firewall',  env('app.autoload.prefix_namespace') . '\Classes\ClassesFirewall');
-
-            $this->cache('app.template.path', env('app.path.resource') . SP . 'template');
-            $this->cache('app.template.mime', '.php');
-
             $this->cache('app.language.path',   env('app.path.resource') . SP . 'language');
             $this->cache('app.language.mime',   '.php');
             $this->cache('app.language.locale', 'en');
-
-            $this->cache('app.firewall.path',                env('app.path.root') . SP . 'firewall');
-            $this->cache('app.firewall.path_htaccess',       env('app.path.root') . SP . '.htaccess');
-            $this->cache('app.firewall.email',               'webmaster@' . env('SERVER.HTTP_HOST'));
-            $this->cache('app.firewall.enable',              false);
-            $this->cache('app.firewall.enable_htaccess',     false);
-            $this->cache('app.firewall.time.request',        100);
-            $this->cache('app.firewall.time.small',          5);
-            $this->cache('app.firewall.time.medium',         300);
-            $this->cache('app.firewall.time.large',          3600);
-            $this->cache('app.firewall.lock_count.small',    5);
-            $this->cache('app.firewall.lock_count.medium',   10);
-            $this->cache('app.firewall.lock_count.large',    15);
-            $this->cache('app.firewall.lock_count.forever',  20);
-            $this->cache('app.firewall.lock_count.htaccess', 25);
 
             $this->cache('app.cfsr.use_token',   true);
             $this->cache('app.cfsr.key_name',    '_cfsr_token');
@@ -136,28 +114,6 @@
 
             $this->cache('app.cfsr.validate_post', true);
             $this->cache('app.cfsr.validate_get',  true);
-
-            $this->cache('error.reporting', E_ALL | E_STRICT);
-            $this->cache('error.mime',      '.php');
-            $this->cache('error.handler',   'handler');
-            $this->cache('error.not_found', 'not_found');
-            $this->cache('error.firewall',  'firewall');
-
-            if (env('dev.enable')) {
-                $rand = env('dev.rand');
-
-                if (is_numeric($rand) == false && $rand !== 0)
-                    $this->cache('dev.rand', intval($_SERVER['REQUEST_TIME']));
-                else
-                    $this->cache('dev.rand', $rand());
-            } else {
-                $this->cache('dev.rand', 0);
-            }
-
-            $this->cache('dev.compress_css', false);
-            $this->cache('dev.compress_js',  false);
-            $this->cache('dev.cache_css',    86400);
-            $this->cache('dev.cache_js',     86400);
         }
 
         public static function env($name, $default = null)
