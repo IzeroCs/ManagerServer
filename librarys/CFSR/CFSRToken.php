@@ -5,7 +5,7 @@
     if (defined('LOADED') == false)
         exit;
 
-    use Librarys\Encryption\PasswordCrypt;
+    use Librarys\Encryption\StringCrypt;
 
     final class CFSRToken
     {
@@ -49,7 +49,7 @@
                         takeUserAgent() .
                         time()              .
 
-                        PasswordCrypt::randomSalt()
+                        StringCrypt::randomSalt()
                     )
                 )
             );
